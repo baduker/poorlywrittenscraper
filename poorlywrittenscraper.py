@@ -16,7 +16,7 @@ for link in soup.find_all('a'):
 print('Finished downloading links!')
 print(len(all_links))
 
-pattern = re.compile(r'(http[s]?://?[^/\s]+/)(comic\/)((\w+-\w+-\w+-\w+\/)*)((\w+-\w+-\w+\/)?)((\w+\/)?)((\w+-\w+\/)?)')
+pattern = re.compile(r'(http[s]?://?[^/\s]+/comic\/\w+-?\w+-?\w+-?\w+\/)')
 
 filtered = [i for i in all_links if pattern.match(i)]
 
