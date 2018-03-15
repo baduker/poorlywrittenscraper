@@ -1,4 +1,5 @@
 import os
+import sys
 import re
 import requests
 import itertools
@@ -19,8 +20,8 @@ def move_to_dir(title):
   except:
     print("Couldn't create directory!")
 
-def grab_link(array):
-  for link in itertools.islice(array, 0, 3):
+def grab_link(array, num):
+  for link in itertools.islice(array, 0, num):
     yield link
 
 def grab_image_source(link):
@@ -56,9 +57,24 @@ all_comics = fetch_archive()
 found_comics = filter_archive(all_comics)
 
 print("{} comics found.".format(len(found_comics)))
+print("How many comics do you want to download?")
 
-for link in grab_link(found_comics):
-  print("Downloading {}".format(link))
+while True:
+  try:
+    n_of_comics = int(input(">> ").strip())
+  except ValueError:
+    print("Error: incorrect value. Try again.")
+    continue
+  if n_of_comics > len(found_comics) or n_of_comics < 0:
+    print("Error: incorrect number of comics to download. Try again.")
+    continue
+  elif n_of_comics == 0:
+    sys.exit()
+  else:
+    break
+
+for link in grab_link(found_comics, n_of_comics):
+  print("Downloading: {}".format(link))
   move_to_dir(DEFAULT_DIR_NAME)
   url = grab_image_source(link)
   download_image(url)
