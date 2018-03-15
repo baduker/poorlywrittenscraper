@@ -61,11 +61,11 @@ def move_to_dir(title):
   except:
     print("Couldn't create directory!")
 
-def grab_link(array, num):
+def generate_comic_link(array, num):
   for link in itertools.islice(array, 0, num):
     yield link
 
-def grab_image_source(link):
+def grab_image_src_url(link):
   req = requests.get(link)
   comic = req.text
   soup = bs(comic, 'html.parser')
@@ -79,7 +79,7 @@ def download_image(link):
     response = get(url)
     file.write(response.content)
 
-def fetch_archive():
+def fetch_comic_archive():
   url = 'http://www.poorlydrawnlines.com/archive/'
   req = requests.get(url)
   page = req.text
@@ -89,22 +89,22 @@ def fetch_archive():
     all_links.append(link.get('href'))
   return all_links
 
-def filter_archive(archive):
+def filter_comic_archive(archive):
   pattern = re.compile(r'http://www.poorlydrawnlines.com/comic/.+')
   filtered_links = [i for i in archive if pattern.match(i)]
   return filtered_links
 
 show_logo()
 
-all_comics = fetch_archive()
-found_comics = filter_archive(all_comics)
+all_comics = fetch_comic_archive()
+found_comics = filter_comic_archive(all_comics)
 
 handle_menu()
 
-for link in grab_link(found_comics, n_of_comics):
+for link in generate_comic_link(found_comics, n_of_comics):
   print("Downloading: {}".format(link))
   move_to_dir(DEFAULT_DIR_NAME)
-  url = grab_image_source(link)
+  url = grab_image_src_url(link)
   download_image(url)
 
 print("Successfully downloaded {} comics.".format(n_of_comics))
