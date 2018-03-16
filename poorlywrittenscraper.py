@@ -1,3 +1,4 @@
+import time
 import os
 import sys
 import re
@@ -101,11 +102,13 @@ found_comics = filter_comic_archive(all_comics)
 
 handle_menu()
 
+start = time.time()
 for link in generate_comic_link(found_comics, n_of_comics):
   print("Downloading: {}".format(link))
   move_to_dir(DEFAULT_DIR_NAME)
   url = grab_image_src_url(link)
   download_image(url)
+end = time.time()
 
-print("Successfully downloaded {} comics.".format(n_of_comics))
+print("Successfully downloaded {} comics in {:.2f} seconds.".format(n_of_comics, end - start))
 
