@@ -1,5 +1,5 @@
 ## The poorly written scraper
-[![pws.png](https://yadi.sk/i/O4rKpkSB3TWHUX)](https://yadi.sk/i/O4rKpkSB3TWHUX)
+[![pws.png](https://s9.postimg.org/fy21b4c5b/pws.png)](https://postimg.org/image/uu0kipnjv/)
 #### Is a Python comic(al) scraper for [poorlydrawnlines.com](poorlydrawnlines.com)
 
 First, the script fetches and indexes all published comics from [poorlydrawnlines archive](poorlydrawnlines.com/archive) and then it lets you download all or some of the comics.
