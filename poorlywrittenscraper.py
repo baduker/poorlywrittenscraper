@@ -62,7 +62,7 @@ def grab_image_src_url(url):
 
 def download_and_save_comic(url):
     file_name = url.split('/')[-1]
-    with open(os.path.join(COMICS_DIRECTORY, file_name)) as file:
+    with open(os.path.join(COMICS_DIRECTORY, file_name), "wb") as file:
         response = requests.get(url)
         file.write(response.content)
 
@@ -92,7 +92,7 @@ def main():
 
     start = time.time()
     for url in comics[:comics_to_download]:
-        thread = threading.Thread(target = download_comic, args = (url,))
+        thread = threading.Thread(target=download_comic, args=(url,))
         thread.start()
     thread.join()
 
