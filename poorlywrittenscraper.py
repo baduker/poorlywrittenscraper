@@ -2,16 +2,16 @@ import time
 import os
 import sys
 import re
+import threading
+
+
 import requests
-import itertools
-from requests import get
 from bs4 import BeautifulSoup as bs
 
-HOME_DIR = os.getcwd()
-DEFAULT_DIR_NAME = 'poorly_created_folder'
 
-def show_logo():
-  print("""
+DEFAULT_DIR_NAME = 'poorly_created_folder'
+COMICS_DIRECTORY =os.path.join(os.getcwd(), DEFAULT_DIR_NAME)
+LOGO = """
 a Python comic(al) scraper for poorlydwarnlines.com
                          __
 .-----.-----.-----.----.|  |.--.--.
@@ -27,88 +27,77 @@ a Python comic(al) scraper for poorlydwarnlines.com
 |__ --|  __|   _|  _  |  _  |  -__|   _|
 |_____|____|__| |___._|   __|_____|__|
                       |__|
-version: 0.2 | author: baduker | https://github.com/baduker
-  """)
+version: 0.3 | author: baduker | https://github.com/baduker
+"""
+ARCHIVE_URL = "http://www.poorlydrawnlines.com/archive/"
+COMIC_PATTERN = re.compile(r'http://www.poorlydrawnlines.com/comic/.+')
 
-def handle_menu():
-  print("\nThe scraper has found {} comics.".format(len(found_comics)))
-  print("How many comics do you want to download?")
-  print("Type 0 to exit.")
 
-  while True:
+def download_comics_menu(comics_found):
+    print("\nThe scraper has found {} comics.".format(len(comics_found)))
+    print("How many comics do you want to download?")
+    print("Type 0 to exit.")
+
+    while True:
+        try:
+            comics_to_download = int(input(">> "))
+        except ValueError:
+            print("Error: expected a number. Try again.")
+            continue
+        if comics_to_download > len(comics_found) or comics_to_download < 0:
+            print("Error: incorrect number of comics to download. Try again.")
+            continue
+        elif comics_to_download == 0:
+            sys.exit()
+        return comics_to_download
+
+
+def grab_image_src_url(url):
+    response = requests.get(url)
+    soup = bs(response.text, 'html.parser')
+    for i in soup.find_all('p'):
+        for img in i.find_all('img', src=True):
+            return img['src']
+
+
+def download_and_save_comic(url):
+    file_name = url.split('/')[-1]
+    with open(os.path.join(COMICS_DIRECTORY, file_name)) as file:
+        response = requests.get(url)
+        file.write(response.content)
+
+
+def fetch_comics_from_archive():
+    response = requests.get(ARCHIVE_URL)
+    soup = bs(response.text, 'html.parser')
+    comics = [url.get("href") for url in soup.find_all("a")]
+    return [url for url in comics if COMIC_PATTERN.match(url)]
+
+
+def download_comic(url):
+    print("Downloading: {}".format(url))
+    url = grab_image_src_url(url)
+    download_and_save_comic(url)
+
+def main():
+    print(LOGO)
+
+    comics = fetch_comics_from_archive()
+    comics_to_download = download_comics_menu(comics)
+
     try:
-      global n_of_comics
-      n_of_comics = int(input(">> ").strip())
-    except ValueError:
-      print("Error: incorrect value. Try again.")
-      continue
-    if n_of_comics > len(found_comics) or n_of_comics < 0:
-      print("Error: incorrect number of comics to download. Try again.")
-      continue
-    elif n_of_comics == 0:
-      sys.exit()
-    else:
-      break
-  return n_of_comics
+        os.mkdir(DEFAULT_DIR_NAME)
+    except OSError as exc:
+        sys.exit("Failed to create directory (error_no {})".format(exc.error_no))
 
-def move_to_dir(title):
-  if os.getcwd() != HOME_DIR:
-    os.chdir(HOME_DIR)
-  try:
-    os.mkdir(title)
-    os.chdir(title)
-  except FileExistsError:
-    os.chdir(title)
-  except:
-    print("Couldn't create directory!")
+    start = time.time()
+    for url in comics[:comics_to_download]:
+        thread = threading.Thread(target = download_comic, args = (url,))
+        thread.start()
+    thread.join()
 
-def generate_comic_link(array, num):
-  for link in itertools.islice(array, 0, num):
-    yield link
+    end = time.time()
+    print("Successfully downloaded {} comics in {:.2f} seconds.".format(comics_to_download, end - start))
 
-def grab_image_src_url(link):
-  req = requests.get(link)
-  comic = req.text
-  soup = bs(comic, 'html.parser')
-  for i in soup.find_all('p'):
-    for img in i.find_all('img', src=True):
-      return img['src']
-
-def download_image(link):
-  file_name = url.split('/')[-1]
-  with open(file_name, "wb") as file:
-    response = get(url)
-    file.write(response.content)
-
-def fetch_comic_archive():
-  url = 'http://www.poorlydrawnlines.com/archive/'
-  req = requests.get(url)
-  page = req.text
-  soup = bs(page, 'html.parser')
-  all_links = []
-  for link in soup.find_all('a'):
-    all_links.append(link.get('href'))
-  return all_links
-
-def filter_comic_archive(archive):
-  pattern = re.compile(r'http://www.poorlydrawnlines.com/comic/.+')
-  filtered_links = [i for i in archive if pattern.match(i)]
-  return filtered_links
-
-show_logo()
-
-all_comics = fetch_comic_archive()
-found_comics = filter_comic_archive(all_comics)
-
-handle_menu()
-
-start = time.time()
-for link in generate_comic_link(found_comics, n_of_comics):
-  print("Downloading: {}".format(link))
-  move_to_dir(DEFAULT_DIR_NAME)
-  url = grab_image_src_url(link)
-  download_image(url)
-end = time.time()
-
-print("Successfully downloaded {} comics in {:.2f} seconds.".format(n_of_comics, end - start))
-
+if __name__ in "__main__":
+    main()
