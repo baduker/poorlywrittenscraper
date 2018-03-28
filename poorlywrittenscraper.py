@@ -1,3 +1,6 @@
+"""
+A simple image downloader for poorlydrawnlines.com/archive
+"""
 import time
 import os
 import sys
@@ -11,6 +14,8 @@ from bs4 import BeautifulSoup as bs
 
 DEFAULT_DIR_NAME = "poorly_created_folder"
 COMICS_DIRECTORY = os.path.join(os.getcwd(), DEFAULT_DIR_NAME)
+
+
 LOGO = """
 a Python comic(al) scraper for poorlydwarnlines.com
                          __
@@ -29,11 +34,15 @@ a Python comic(al) scraper for poorlydwarnlines.com
                       |__|
 version: 0.4 | author: baduker | https://github.com/baduker
 """
+
+
 ARCHIVE_URL = "http://www.poorlydrawnlines.com/archive/"
 COMIC_PATTERN = re.compile(r'http://www.poorlydrawnlines.com/comic/.+')
 
-
 def download_comics_menu(comics_found):
+    """
+    Main download menu, takes number of available comics for download
+    """
     print("\nThe scraper has found {} comics.".format(len(comics_found)))
     print("How many comics do you want to download?")
     print("Type 0 to exit.")
@@ -53,6 +62,9 @@ def download_comics_menu(comics_found):
 
 
 def grab_image_src_url(session, url):
+    """
+    Fetches urls with the comic image source
+    """
     response = session.get(url)
     soup = bs(response.text, 'html.parser')
     for i in soup.find_all('p'):
@@ -61,6 +73,9 @@ def grab_image_src_url(session, url):
 
 
 def download_and_save_comic(session, url):
+    """
+    Downloads and saves the comic image
+    """
     file_name = url.split('/')[-1]
     with open(os.path.join(COMICS_DIRECTORY, file_name), "wb") as file:
         response = session.get(url)
@@ -68,6 +83,9 @@ def download_and_save_comic(session, url):
 
 
 def fetch_comics_from_archive(session):
+    """
+    Grabs all urls from the poorlydrawnlines.com/archive and parses for only those that link to published comics
+    """
     response = session.get(ARCHIVE_URL)
     soup = bs(response.text, 'html.parser')
     comics = [url.get("href") for url in soup.find_all("a")]
@@ -75,11 +93,18 @@ def fetch_comics_from_archive(session):
 
 
 def download_comic(session, url):
+    """
+    Download progress information
+    """
     print("Downloading: {}".format(url))
     url = grab_image_src_url(session, url)
     download_and_save_comic(session, url)
 
+
 def main():
+    """
+    Encapsulates and executes all methods in the main function
+    """
     print(LOGO)
 
     session = requests.Session()
@@ -97,7 +122,7 @@ def main():
         executor.map(lambda url: download_comic(session, url), comics[:comics_to_download])
     executor.shutdown()
     end = time.time()
-    print("Successfully downloaded {} comics in {:.2f} seconds.".format(comics_to_download, end - start))
+    print("Finished downloading {} comics in {:.2f} sec.".format(comics_to_download, end - start))
 
 if __name__ in "__main__":
     main()
