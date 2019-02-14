@@ -15,4 +15,4 @@ Should you have any issues, questions and/or suggestions feel free to drop me a 
 
 Enjoy the comics!
 
-[![challenge.png](https://s26.postimg.org/3rl9tixy1/challenge.png)](https://postimg.org/image/7nylpiixh/)
+[![challenge.png](http://www.poorlydrawnlines.com/wp-content/uploads/2018/01/challenge.png)](http://www.poorlydrawnlines.com/wp-content/uploads/2018/01/challenge.png)
