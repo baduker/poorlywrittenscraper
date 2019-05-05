@@ -1,13 +1,29 @@
 ## Python image scraper for poorlydrawnlines.com
-[![pws.png](https://s26.postimg.org/57wsbhdnt/pws.png)](https://postimg.org/image/4v5e5avdx/)
+~~~
+                         __
+.-----.-----.-----.----.|  |.--.--.
+|  _  |  _  |  _  |   _||  ||  |  |
+|   __|_____|_____|__|  |__||___  |
+|__|                        |_____|
+                __ __   __
+.--.--.--.----.|__|  |_|  |_.-----.-----.
+|  |  |  |   _||  |   _|   _|  -__|     |
+|________|__|  |__|____|____|_____|__|__|
+
+.-----.----.----.---.-.-----.-----.----.
+|__ --|  __|   _|  _  |  _  |  -__|   _|
+|_____|____|__| |___._|   __|_____|__|
+                      |__|
+~~~
+
 #### PWS is a Python comic(al) scraper for [poorlydrawnlines.com](poorlydrawnlines.com)
 
-The script fetches and indexes all published comics from [poorlydrawnlines archive](poorlydrawnlines.com/archive) and then it lets you download all or some of the comics.
+The script fetches and indexes all published comics from [poorlydrawnlines](poorlydrawnlines.com/archive) archive and then it lets you download all or some of the comics.
 
-In order to run the script, just grab the **poorlywrritenscript.py** file and fire it up in your **Python 3.x** environment. The images will be downloaded and saved in a septate folder in your current working directory.
+In order to run the script, just grab the **poorlywrritenscript.py** file and fire it up in your **Python 3.x** environment (if you're running on Linux don't forget the `#!/usr/bin/python3`. The images will be downloaded and saved in a new folder in your current working directory.
 
 #### Requirements:
-In order to run, the scrip needs the following third party modules:
+In order to run, the script needs the following third party modules:
 + `requests`
 + `bs4`
 
